@@ -41,7 +41,7 @@ There's no `npm test`, no CI, no headless runner. If you want one later, the tes
 | `allDone` | False until 24 weeks + 5 bosses |
 | `currentWeek` / `currentPhase` | First incomplete week walks across phases |
 | `nextStreak` | First check-in, same-day no-op, +1 day, gap day reset, no `lastCheckIn` |
-| `earnedBadgeIds` | Empty state → no badges; W2 complete → `redLight` + `greenLight`; all complete → `equalExpert` |
+| `earnedBadgeIds` | Empty state → no badges; W2 complete → `redLight` + `greenLight`; all complete → `offerEarned` |
 | `quoteForDay` | Modular rotation across 13 quotes |
 
 ---

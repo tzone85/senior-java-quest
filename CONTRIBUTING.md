@@ -54,7 +54,7 @@ If you change the schedule, the task data, or the tone of the reminders, update 
 
 ## Memory and personal context
 
-`lib/quest-core.js` is hardcoded around `tzone85/ee-java-quest`. If you fork this for your own quest:
+`lib/quest-core.js` defaults to `tzone85/senior-java-quest` for sync. If you fork this for your own quest:
 
 1. Change the GitHub owner/repo in the app Settings (or default in `defaultSyncConfig()`).
 2. Update the routine prompts' `https://github.com/...` references.
