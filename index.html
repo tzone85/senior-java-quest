@@ -517,7 +517,9 @@
   }
   .setting-label { font-weight: 600; }
   .setting-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  input[type="date"] {
+  input[type="date"],
+  input[type="text"],
+  input[type="password"] {
     background: var(--surface-2);
     border: 1px solid var(--border);
     color: var(--text);
@@ -525,8 +527,41 @@
     border-radius: var(--radius-sm);
     font-size: 14px;
     color-scheme: dark;
+    width: 100%;
   }
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="date"]:focus { outline: none; border-color: var(--gold); }
   [data-theme="light"] input[type="date"] { color-scheme: light; }
+
+  .setting-stack {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .setting-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sync-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  @media (min-width: 640px) {
+    .sync-grid { grid-template-columns: 2fr 2fr 1fr; }
+  }
+  .sync-status {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sync-status.ok { color: var(--p3); }
+  .sync-status.warn { color: var(--p5); }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
   .switch {
     position: relative;
@@ -799,6 +834,23 @@
           </div>
           <button class="switch" id="themeSwitch" aria-label="Toggle theme"></button>
         </div>
+        <div class="setting-stack">
+          <div class="setting-head">
+            <div>
+              <div class="setting-label">GitHub progress sync</div>
+              <div class="setting-desc">Auto-push your progress to <code>state.json</code> in your repo so the daily reminders use your <em>actual</em> week, not just the calendar week. Token stored in browser only — use a fine-grained PAT with <strong>Contents: read+write</strong> scope.</div>
+            </div>
+            <button class="btn" id="syncBtn">Sync now</button>
+          </div>
+          <div class="sync-grid">
+            <input type="text" id="syncOwner" placeholder="owner (e.g. tzone85)" autocomplete="off" />
+            <input type="text" id="syncRepo" placeholder="repo (e.g. ee-java-quest)" autocomplete="off" />
+            <input type="text" id="syncBranch" placeholder="branch (main)" autocomplete="off" />
+          </div>
+          <input type="password" id="syncToken" placeholder="GitHub personal access token (PAT)" autocomplete="off" />
+          <div class="sync-status" id="syncStatus"><span class="sync-dot"></span><span id="syncStatusText">Not configured.</span></div>
+        </div>
+
         <div class="setting">
           <div>
             <div class="setting-label">Export progress</div>
@@ -1103,6 +1155,19 @@ const BADGES = [
 /* ---------- State ---------- */
 
 const STORAGE_KEY = "eeq_progress";
+const SYNC_KEY = "eeq_sync";
+
+function defaultSyncConfig() {
+  return { owner: "tzone85", repo: "ee-java-quest", branch: "main", token: "", lastSynced: null, lastStatus: "" };
+}
+function loadSyncConfig() {
+  try {
+    const raw = localStorage.getItem(SYNC_KEY);
+    if (!raw) return defaultSyncConfig();
+    return { ...defaultSyncConfig(), ...JSON.parse(raw) };
+  } catch (e) { return defaultSyncConfig(); }
+}
+function persistSyncConfig() { localStorage.setItem(SYNC_KEY, JSON.stringify(syncConfig)); }
 
 function defaultState() {
   const progress = {};
@@ -1140,6 +1205,8 @@ function loadState() {
 }
 
 let state = loadState();
+let syncConfig = loadSyncConfig();
+let syncTimer = null;
 const pendingBadgePop = new Set();
 let currentPhaseId = null;
 let currentWeekId = null;
@@ -1148,9 +1215,100 @@ function saveState(showToast) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     if (showToast !== false) toast("Saved");
+    scheduleSync();
   } catch (e) {
     console.error("Save failed", e);
     toast("Save failed", true);
+  }
+}
+
+/* ---------- GitHub sync ---------- */
+
+function scheduleSync() {
+  if (!syncConfig.token || !syncConfig.owner || !syncConfig.repo) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncToGitHub(true), 2500);
+}
+
+function utf8ToBase64(s) {
+  return btoa(unescape(encodeURIComponent(s)));
+}
+
+async function syncToGitHub(silent) {
+  if (!syncConfig.token) {
+    if (!silent) toast("Add a GitHub token first", true);
+    return false;
+  }
+  if (!syncConfig.owner || !syncConfig.repo) {
+    if (!silent) toast("Set owner + repo first", true);
+    return false;
+  }
+  const branch = syncConfig.branch || "main";
+  const apiBase = "https://api.github.com/repos/" + encodeURIComponent(syncConfig.owner)
+    + "/" + encodeURIComponent(syncConfig.repo) + "/contents/state.json";
+  const headers = {
+    "Authorization": "Bearer " + syncConfig.token,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+
+  try {
+    let sha = null;
+    const head = await fetch(apiBase + "?ref=" + encodeURIComponent(branch), { headers });
+    if (head.ok) {
+      const j = await head.json();
+      sha = j.sha;
+    } else if (head.status !== 404) {
+      throw new Error("HEAD HTTP " + head.status);
+    }
+    const body = {
+      message: "chore: sync EE Java Quest progress",
+      content: utf8ToBase64(JSON.stringify(state, null, 2)),
+      branch
+    };
+    if (sha) body.sha = sha;
+
+    const put = await fetch(apiBase, {
+      method: "PUT",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!put.ok) {
+      const errTxt = await put.text();
+      throw new Error("PUT HTTP " + put.status + ": " + errTxt.slice(0, 200));
+    }
+    syncConfig.lastSynced = new Date().toISOString();
+    syncConfig.lastStatus = "ok";
+    persistSyncConfig();
+    if (!silent) toast("Synced to GitHub");
+    updateSyncStatus();
+    return true;
+  } catch (e) {
+    console.error("Sync failed", e);
+    syncConfig.lastStatus = "fail: " + (e.message || "unknown");
+    persistSyncConfig();
+    if (!silent) toast("Sync failed: " + e.message, true);
+    updateSyncStatus();
+    return false;
+  }
+}
+
+function updateSyncStatus() {
+  const wrap = $("syncStatus");
+  const text = $("syncStatusText");
+  if (!wrap || !text) return;
+  wrap.classList.remove("ok", "warn");
+  if (!syncConfig.token) {
+    text.textContent = "Not configured. Reminders fall back to calendar week.";
+  } else if (syncConfig.lastStatus && syncConfig.lastStatus.startsWith("fail")) {
+    wrap.classList.add("warn");
+    text.textContent = "Last sync failed — " + syncConfig.lastStatus.slice(6);
+  } else if (syncConfig.lastSynced) {
+    wrap.classList.add("ok");
+    const d = new Date(syncConfig.lastSynced);
+    text.textContent = "Last synced " + d.toLocaleString();
+  } else {
+    text.textContent = "Token set. Hit ‘Sync now’ to push for the first time.";
   }
 }
 
@@ -1525,6 +1683,11 @@ function renderStats() {
 function renderSettings() {
   $("startDateInput").value = state.startDate || todayStr();
   $("themeSwitch").classList.toggle("on", state.theme === "light");
+  $("syncOwner").value = syncConfig.owner || "";
+  $("syncRepo").value = syncConfig.repo || "";
+  $("syncBranch").value = syncConfig.branch || "main";
+  $("syncToken").value = syncConfig.token || "";
+  updateSyncStatus();
 }
 
 /* ---------- Toast ---------- */
@@ -1674,6 +1837,20 @@ function init() {
   });
 
   $("exportBtn").addEventListener("click", exportProgress);
+
+  const wireSyncField = (id, key) => {
+    $(id).addEventListener("input", e => {
+      syncConfig[key] = e.target.value.trim();
+      persistSyncConfig();
+      updateSyncStatus();
+    });
+  };
+  wireSyncField("syncOwner", "owner");
+  wireSyncField("syncRepo", "repo");
+  wireSyncField("syncBranch", "branch");
+  wireSyncField("syncToken", "token");
+
+  $("syncBtn").addEventListener("click", () => syncToGitHub(false));
 
   $("importInput").addEventListener("change", e => {
     const f = e.target.files[0];
