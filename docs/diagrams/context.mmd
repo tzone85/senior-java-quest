@@ -1,0 +1,24 @@
+%%{init: {'theme':'default'}}%%
+flowchart LR
+    User([Thando])
+    App["EE Java Quest App<br/>(index.html)"]
+    LS[("Browser<br/>localStorage")]
+    GH[("GitHub Repo<br/>tzone85/ee-java-quest")]
+    Cron["Scheduled Routines<br/>(claude.ai/code)"]
+    Notif["claude.ai<br/>Notifications"]
+
+    User -->|"opens, ticks tasks,<br/>writes reflections"| App
+    App -->|"persists state"| LS
+    App -->|"syncs state.json<br/>via REST API + PAT"| GH
+    Cron -->|"clones repo,<br/>reads state.json"| GH
+    Cron -->|"08:00 + 16:00 SAST<br/>personalised nudge"| Notif
+    Notif -->|"surfaces reminder"| User
+
+    classDef person fill:#F59E0B,stroke:#0D1117,color:#0D1117,font-weight:bold
+    classDef system fill:#7C3AED,stroke:#0D1117,color:#FFFFFF
+    classDef store fill:#10B981,stroke:#0D1117,color:#0D1117
+    classDef ext fill:#0EA5E9,stroke:#0D1117,color:#FFFFFF
+    class User person
+    class App system
+    class LS,GH store
+    class Cron,Notif ext

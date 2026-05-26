@@ -1,0 +1,25 @@
+%%{init: {'theme':'default'}}%%
+flowchart TB
+    Start(["Cron fires<br/>06:00 / 14:00 UTC"]) --> Date["Bash: date -u"]
+    Date --> CalWeek["Compute calendar_week<br/>= floor((today − 2026-05-27) / 7) + 1"]
+    CalWeek --> ReadSJ{"cat state.json"}
+
+    ReadSJ -->|missing or unparseable| Fallback["actual_week = calendar_week<br/>sync_state = 'no_sync'<br/>ticked_flags = [false,false,false,false]"]
+    ReadSJ -->|valid JSON| Parse["Parse progress[]"]
+    Parse --> Find["actual_week = first wN<br/>where complete = false"]
+    Find --> Compute["gap = calendar_week − actual_week<br/>ticks_done = sum(tasks[true])<br/>sync_state = 'live'"]
+
+    Fallback --> Lookup["Look up phase + week title + 4 tasks<br/>(baked-in WEEK DATA table)"]
+    Compute --> Lookup
+    Lookup --> Quote["Pick quote by (days_elapsed mod 7)"]
+    Quote --> Compose["Render markdown<br/>(emoji header, gap line,<br/>tasks ± ✅, quote, closer)"]
+    Compose --> Done(["Output to<br/>claude.ai/code/routines"])
+
+    classDef pure fill:#10B981,stroke:#0D1117,color:#0D1117
+    classDef io fill:#0EA5E9,stroke:#0D1117,color:#FFFFFF
+    classDef bad fill:#F97316,stroke:#0D1117,color:#FFFFFF
+    classDef good fill:#7C3AED,stroke:#0D1117,color:#FFFFFF
+
+    class Date,ReadSJ io
+    class CalWeek,Parse,Find,Compute,Lookup,Quote,Compose good
+    class Fallback bad

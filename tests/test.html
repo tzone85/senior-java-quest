@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EE Java Quest — Tests</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D1117;
+    --surface: #161B22;
+    --border: #2A323C;
+    --text: #F0F4F8;
+    --muted: #9CA3AF;
+    --pass: #10B981;
+    --fail: #EF4444;
+    --gold: #F59E0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    padding: 32px 24px 64px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 28px;
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+  }
+  .sub { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .summary.allpass { border-color: var(--pass); box-shadow: 0 0 30px -10px var(--pass); }
+  .summary.someFail { border-color: var(--fail); box-shadow: 0 0 30px -10px var(--fail); }
+  .summary-count { font-size: 28px; font-weight: 800; }
+  .summary-count.ok { color: var(--pass); }
+  .summary-count.bad { color: var(--fail); }
+  .row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .row.pass { border-left-color: var(--pass); }
+  .row.fail { border-left-color: var(--fail); }
+  .badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .badge.pass { background: rgba(16,185,129,.18); color: var(--pass); }
+  .badge.fail { background: rgba(239,68,68,.18); color: var(--fail); }
+  .name { flex: 1; font-weight: 500; }
+  .err {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--fail);
+    margin-top: 4px;
+    background: rgba(239,68,68,.08);
+    padding: 8px 10px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .legend {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: rgba(245,158,11,.15);
+    color: var(--gold);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  a { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<h1>EE Java Quest — Tests</h1>
+<p class="sub">Pure-core unit tests for <code>lib/quest-core.js</code>. No build tools. No frameworks. Open this file in a browser to run.</p>
+
+<div id="summary" class="summary">
+  <div>
+    <div class="summary-count ok" id="passCount">0</div>
+    <div style="color:var(--muted);font-size:12px;">passed</div>
+  </div>
+  <div>
+    <div class="summary-count bad" id="failCount">0</div>
+    <div style="color:var(--muted);font-size:12px;">failed</div>
+  </div>
+  <div>
+    <div class="summary-count" id="totalCount" style="color:var(--gold);">0</div>
+    <div style="color:var(--muted);font-size:12px;">total</div>
+  </div>
+  <div>
+    <div class="summary-count" id="durationCount" style="color:var(--muted);font-size:18px;">0ms</div>
+    <div style="color:var(--muted);font-size:12px;">elapsed</div>
+  </div>
+</div>
+
+<div id="rows"></div>
+
+<p class="legend">
+  Add new assertions in <code>tests/quest-core.test.js</code> and reload.
+  See <a href="../docs/testing/">docs/testing</a> for the TDD policy and the test harness API.
+</p>
+
+<script src="../lib/quest-core.js"></script>
+<script>
+  const t0 = performance.now();
+</script>
+<script src="quest-core.test.js"></script>
+<script>
+  const elapsed = Math.round(performance.now() - t0);
+  const results = window.__QUEST_TEST_RESULTS__ || [];
+  const pass = results.filter(r => r.pass).length;
+  const fail = results.length - pass;
+
+  document.getElementById("passCount").textContent = pass;
+  document.getElementById("failCount").textContent = fail;
+  document.getElementById("totalCount").textContent = results.length;
+  document.getElementById("durationCount").textContent = elapsed + "ms";
+
+  const summary = document.getElementById("summary");
+  summary.classList.add(fail === 0 ? "allpass" : "someFail");
+
+  const rows = document.getElementById("rows");
+  results.forEach(r => {
+    const row = document.createElement("div");
+    row.className = "row " + (r.pass ? "pass" : "fail");
+    const badge = document.createElement("span");
+    badge.className = "badge " + (r.pass ? "pass" : "fail");
+    badge.textContent = r.pass ? "pass" : "fail";
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = r.name;
+    row.appendChild(badge);
+    row.appendChild(name);
+    if (!r.pass) {
+      const err = document.createElement("div");
+      err.className = "err";
+      err.textContent = r.err;
+      name.appendChild(err);
+    }
+    rows.appendChild(row);
+  });
+
+  if (fail > 0) {
+    document.title = "✗ " + fail + " failed · " + pass + "/" + results.length + " — EE Java Quest Tests";
+  } else {
+    document.title = "✓ " + pass + "/" + results.length + " — EE Java Quest Tests";
+  }
+</script>
+</body>
+</html>

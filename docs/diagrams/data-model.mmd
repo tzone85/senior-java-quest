@@ -1,0 +1,70 @@
+%%{init: {'theme':'default'}}%%
+classDiagram
+    direction LR
+
+    class State {
+        +Object progress
+        +Object bossBattles
+        +String[] achievements
+        +String startDate
+        +String theme
+        +String lastCheckIn
+        +Number streak
+    }
+
+    class WeekProgress {
+        +Boolean[] tasks (length 4)
+        +String reflection
+        +Boolean complete
+    }
+
+    class BossBattles {
+        +Boolean p1
+        +Boolean p2
+        +Boolean p3
+        +Boolean p4
+        +Boolean p5
+    }
+
+    class SyncConfig {
+        +String owner
+        +String repo
+        +String branch
+        +String token
+        +String lastSynced
+        +String lastStatus
+    }
+
+    class Phase {
+        +String id
+        +String num
+        +String name
+        +String range
+        +String color
+        +Object boss
+        +Week[] weeks
+    }
+
+    class Week {
+        +String id
+        +Number n
+        +String title
+        +String[] tasks (length 4)
+    }
+
+    class Badge {
+        +String id
+        +String name
+        +String icon
+        +String desc
+        +Function check
+    }
+
+    State "1" *-- "24" WeekProgress : progress["wN"]
+    State "1" *-- "1" BossBattles : bossBattles
+    Phase "1" *-- "many" Week : weeks
+    SyncConfig <.. State : auto-pushed as state.json
+    Badge ..> State : check(state) returns Boolean
+
+    note for State "Stored in localStorage under 'eeq_progress'.\nSynced to GitHub as state.json."
+    note for SyncConfig "Stored separately under 'eeq_sync'.\nNEVER synced to GitHub (contains PAT)."

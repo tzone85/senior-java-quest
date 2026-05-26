@@ -1,0 +1,17 @@
+%%{init: {'theme':'default'}}%%
+stateDiagram-v2
+    direction LR
+    [*] --> Locked: not phase 1<br/>+ prior phase incomplete
+    [*] --> Ready: phase 1<br/>(fresh start)
+
+    Locked --> Ready: prior phase fully complete<br/>(weeks + boss)
+    Ready --> InProgress: any week ticked partially<br/>or fully complete
+    InProgress --> BossUnlocked: all weeks<br/>in phase complete
+    BossUnlocked --> Complete: boss defeated
+    Complete --> [*]
+
+    note right of BossUnlocked
+        Boss card glows + becomes
+        clickable. CSS animation
+        on .boss-card.unlocked.
+    end note

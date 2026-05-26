@@ -1,0 +1,32 @@
+%%{init: {'theme':'default'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant A as index.html<br/>(adapters)
+    participant Q as quest-core.js<br/>(pure)
+    participant L as localStorage
+    participant G as GitHub REST API
+    participant R as state.json<br/>(in repo)
+
+    U->>A: Tick a task / mark complete
+    A->>Q: nextStreak(state, today)
+    Q-->>A: { streak, lastCheckIn }
+    A->>Q: earnedBadgeIds(state)
+    Q-->>A: badge ids
+    A->>L: setItem(eeq_progress, JSON)
+    A-->>A: scheduleSync (2.5s debounce)
+
+    Note over A: After debounce
+    A->>G: GET /contents/state.json?ref=main
+    alt File exists
+        G-->>A: 200 { sha }
+    else 404
+        G-->>A: 404 (sha = null)
+    end
+
+    A->>G: PUT /contents/state.json<br/>(content base64 + sha)
+    G->>R: Commit "chore: sync EE Java Quest progress"
+    G-->>A: 200
+    A-->>U: toast "Synced"
+
+    Note over R: Available to cron at next 06:00 / 14:00 UTC

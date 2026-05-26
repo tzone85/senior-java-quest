@@ -1,0 +1,37 @@
+%%{init: {'theme':'default'}}%%
+flowchart TB
+    User([Thando])
+
+    subgraph Browser["Browser (file:// or http://)"]
+        direction TB
+        IH["index.html<br/>view layer + IO adapters"]
+        QC["lib/quest-core.js<br/>pure domain"]
+        IH -.imports.-> QC
+    end
+
+    LS[("Browser localStorage<br/>eeq_progress + eeq_sync")]
+
+    subgraph Cloud["External services"]
+        direction TB
+        GHAPI["GitHub REST API<br/>/repos/.../contents/state.json"]
+        Repo[("Repo: tzone85/ee-java-quest")]
+        CronAgent["Scheduled Remote Agent<br/>(Claude Sonnet 4.6)"]
+        GHAPI --> Repo
+        CronAgent -->|git clone| Repo
+    end
+
+    User --> IH
+    IH -->|read/write| LS
+    IH -->|"PUT contents<br/>(PAT auth)"| GHAPI
+    CronAgent -->|"markdown reminder"| User
+
+    classDef person fill:#F59E0B,stroke:#0D1117,color:#0D1117,font-weight:bold
+    classDef container fill:#7C3AED,stroke:#0D1117,color:#FFFFFF
+    classDef pure fill:#10B981,stroke:#0D1117,color:#0D1117
+    classDef store fill:#0EA5E9,stroke:#0D1117,color:#FFFFFF
+    classDef ext fill:#EF4444,stroke:#0D1117,color:#FFFFFF
+    class User person
+    class IH container
+    class QC pure
+    class LS,Repo store
+    class GHAPI,CronAgent ext
