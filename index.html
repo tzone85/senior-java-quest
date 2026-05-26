@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Equal Experts Java Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D1117;
+    --surface: #161B22;
+    --surface-2: #1F2630;
+    --border: #2A323C;
+    --text: #F0F4F8;
+    --muted: #9CA3AF;
+    --gold: #F59E0B;
+    --p1: #7C3AED;
+    --p2: #0EA5E9;
+    --p3: #10B981;
+    --p4: #F97316;
+    --p5: #EF4444;
+    --shadow: 0 4px 20px rgba(0,0,0,.4);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  }
+  [data-theme="light"] {
+    --bg: #F7F8FA;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1F5;
+    --border: #DDE2EA;
+    --text: #0D1117;
+    --muted: #5A6473;
+    --shadow: 0 4px 20px rgba(15,23,42,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  body {
+    min-height: 100vh;
+    transition: background .3s ease, color .3s ease;
+    padding-bottom: 80px;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  input, textarea { font-family: inherit; }
+
+  .app {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+  }
+  .main {
+    padding: 24px 20px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  @media (min-width: 900px) {
+    .app { grid-template-columns: 240px 1fr; }
+    .main { padding: 40px 48px; }
+    body { padding-bottom: 0; }
+  }
+
+  .nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 4px;
+    z-index: 50;
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    transition: all .2s;
+  }
+  .nav-btn.active { color: var(--gold); background: var(--surface-2); }
+  .nav-btn:hover { color: var(--text); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  @media (min-width: 900px) {
+    .nav {
+      position: sticky;
+      top: 0;
+      bottom: auto;
+      height: 100vh;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 32px 16px;
+      border-top: none;
+      border-right: 1px solid var(--border);
+      gap: 4px;
+    }
+    .nav-brand {
+      padding: 0 12px 32px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -.02em;
+      display: block;
+    }
+    .nav-brand .accent { color: var(--gold); }
+    .nav-btn {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+  }
+  .nav-brand { display: none; }
+
+  .page-head { margin-bottom: 28px; }
+  .page-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+  }
+  .page-sub { color: var(--muted); font-size: 14px; }
+  @media (min-width: 900px) { .page-title { font-size: 34px; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .card:hover { box-shadow: var(--shadow); }
+  .grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 900px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } .grid-5 { grid-template-columns: repeat(5, 1fr); } }
+
+  .progress-shell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .progress-label { font-weight: 600; font-size: 15px; }
+  .progress-pct { font-size: 28px; font-weight: 800; color: var(--gold); letter-spacing: -.02em; }
+  .progress-bar {
+    background: var(--surface-2);
+    border-radius: 999px;
+    height: 14px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5));
+    border-radius: 999px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(.2,.8,.2,1);
+  }
+  .progress-meta {
+    display: flex;
+    gap: 18px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .progress-meta strong { color: var(--text); font-weight: 600; }
+
+  .quote {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+  .quote-text { font-size: 15px; line-height: 1.6; }
+  .quote-author { display: block; margin-top: 8px; color: var(--muted); font-style: normal; font-size: 13px; font-weight: 500; }
+
+  .section-title { font-weight: 700; font-size: 18px; margin-bottom: 14px; letter-spacing: -.01em; }
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+  }
+  .phase-card:hover { transform: translateY(-2px); border-color: var(--phase-color); }
+  .phase-card.current {
+    box-shadow: 0 0 0 2px var(--phase-color), 0 0 30px -8px var(--phase-color);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 2px var(--phase-color), 0 0 24px -10px var(--phase-color); }
+    50% { box-shadow: 0 0 0 2px var(--phase-color), 0 0 36px -4px var(--phase-color); }
+  }
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--phase-color);
+  }
+  .phase-num { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+  .phase-name { font-size: 18px; font-weight: 700; margin-bottom: 6px; letter-spacing: -.01em; }
+  .phase-range { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .phase-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--muted);
+  }
+  .phase-status.locked { color: var(--muted); }
+  .phase-status.in-progress { background: rgba(245,158,11,.15); color: var(--gold); }
+  .phase-status.boss-unlocked { background: rgba(239,68,68,.15); color: var(--p5); animation: glow 1.6s ease-in-out infinite; }
+  .phase-status.complete { background: rgba(16,185,129,.15); color: var(--p3); }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,.4); }
+    50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+  }
+  .phase-progress {
+    margin-top: 12px;
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .phase-progress-fill {
+    height: 100%;
+    background: var(--phase-color);
+    border-radius: 999px;
+    transition: width .8s ease;
+  }
+
+  .streak {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(245,158,11,.15), rgba(245,158,11,.05));
+    border: 1px solid rgba(245,158,11,.3);
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .streak-flame { font-size: 28px; }
+  .streak-count { font-size: 22px; font-weight: 800; color: var(--gold); }
+  .streak-label { color: var(--muted); font-size: 13px; }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    transition: background .2s, color .2s;
+  }
+  .back-btn:hover { background: var(--surface-2); color: var(--text); }
+
+  .week-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s;
+  }
+  .week-card:hover { transform: translateX(4px); border-color: var(--phase-color); }
+  .week-card.complete { border-color: var(--p3); background: linear-gradient(90deg, rgba(16,185,129,.08), var(--surface)); }
+  .week-card.current { border-color: var(--phase-color); box-shadow: 0 0 0 2px var(--phase-color); }
+  .week-num-tag {
+    background: var(--phase-color);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .week-info { flex: 1; }
+  .week-title { font-weight: 600; font-size: 15px; }
+  .week-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .week-check { color: var(--p3); font-size: 22px; }
+  .week-arrow { color: var(--muted); }
+
+  .week-detail .card { margin-bottom: 16px; }
+  .task-list { display: flex; flex-direction: column; gap: 12px; }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .task-item:hover { border-color: var(--phase-color); }
+  .task-item.done { opacity: .65; }
+  .task-item.done .task-label { text-decoration: line-through; }
+  .task-checkbox {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    transition: all .2s;
+    margin-top: 1px;
+  }
+  .task-item.done .task-checkbox {
+    background: var(--phase-color);
+    border-color: var(--phase-color);
+  }
+  .task-checkbox::after {
+    content: '';
+    width: 6px; height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform .2s;
+    margin-top: -2px;
+  }
+  .task-item.done .task-checkbox::after { transform: rotate(45deg) scale(1); }
+  .task-body { flex: 1; }
+  .task-cat { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+  .task-label { font-size: 14px; line-height: 1.4; }
+
+  textarea.reflection {
+    width: 100%;
+    min-height: 110px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    resize: vertical;
+    transition: border-color .2s;
+  }
+  textarea.reflection:focus { outline: none; border-color: var(--phase-color); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all .2s;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn:hover { background: var(--border); }
+  .btn-primary { background: var(--phase-color, var(--gold)); border-color: var(--phase-color, var(--gold)); color: white; }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-primary:disabled, .btn:disabled { opacity: .4; cursor: not-allowed; filter: none; }
+  .btn-danger { background: var(--p5); border-color: var(--p5); color: white; }
+  .btn-danger:hover { filter: brightness(1.1); }
+  .btn-ghost { background: transparent; }
+
+  .boss-card {
+    margin-top: 20px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .boss-card.locked { opacity: .6; filter: grayscale(.5); cursor: not-allowed; }
+  .boss-card.unlocked {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(239,68,68,.08) 100%);
+    border: none;
+    box-shadow: 0 0 0 2px transparent, 0 0 30px -4px var(--phase-color);
+    cursor: pointer;
+    animation: bossGlow 2.4s ease-in-out infinite;
+  }
+  .boss-card.unlocked::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--p1), var(--p2), var(--p3), var(--p4), var(--p5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .boss-card.complete {
+    background: linear-gradient(135deg, rgba(16,185,129,.15), rgba(16,185,129,.05));
+    border: 2px solid var(--p3);
+    animation: none;
+  }
+  @keyframes bossGlow {
+    0%, 100% { box-shadow: 0 0 30px -10px var(--p5), 0 0 0 2px transparent; }
+    50% { box-shadow: 0 0 50px -4px var(--p5), 0 0 0 2px transparent; }
+  }
+  .boss-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--p5);
+    margin-bottom: 8px;
+  }
+  .boss-title { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
+  .boss-desc { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+
+  .badge-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 640px) { .badge-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) { .badge-grid { grid-template-columns: repeat(5, 1fr); } }
+  .badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    text-align: center;
+    transition: transform .2s, border-color .2s;
+  }
+  .badge.locked { opacity: .35; filter: grayscale(1); }
+  .badge.unlocked { border-color: var(--gold); box-shadow: 0 0 24px -8px var(--gold); }
+  .badge.new { animation: badgePop .8s cubic-bezier(.4,0,.2,1); }
+  @keyframes badgePop {
+    0% { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    80% { transform: scale(0.95) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .badge-icon {
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 10px;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,.2));
+  }
+  .badge-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .badge-desc { color: var(--muted); font-size: 11px; line-height: 1.4; }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .stat-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .stat-value { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .stat-value.gold { color: var(--gold); }
+  .stat-value .of { font-size: 18px; color: var(--muted); font-weight: 700; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .setting {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .setting-label { font-weight: 600; }
+  .setting-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  input[type="date"] {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color-scheme: dark;
+  }
+  [data-theme="light"] input[type="date"] { color-scheme: light; }
+
+  .switch {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 20px; height: 20px;
+    background: var(--text);
+    border-radius: 50%;
+    transition: transform .25s, background .25s;
+  }
+  .switch.on { background: var(--gold); border-color: var(--gold); }
+  .switch.on::after { transform: translateX(22px); background: white; }
+
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface);
+    border: 1px solid var(--p3);
+    color: var(--p3);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (min-width: 900px) {
+    .toast { bottom: 32px; left: auto; right: 32px; transform: translateX(0) translateY(20px); }
+    .toast.show { transform: translateX(0) translateY(0); }
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 200;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: var(--shadow);
+  }
+  .modal h3 { font-size: 18px; margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 18px; line-height: 1.5; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .confetti-host {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 150;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    opacity: 0;
+    animation: confetti-fall 2.4s linear forwards;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(0) rotate(0); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .hidden { display: none !important; }
+
+  .complete-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .complete-label { font-weight: 600; }
+  .complete-help { color: var(--muted); font-size: 13px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .chip strong { color: var(--text); font-weight: 600; }
+  .chip.good { color: var(--p3); }
+
+  .row-flex { display: flex; align-items: center; gap: 10px; }
+  .full-width { width: 100%; }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="app">
+
+  <nav class="nav" aria-label="Primary">
+    <span class="nav-brand">EE <span class="accent">Java Quest</span></span>
+    <button class="nav-btn active" data-view="dashboard"><span class="nav-icon">🏠</span><span>Home</span></button>
+    <button class="nav-btn" data-view="badges"><span class="nav-icon">🏆</span><span>Badges</span></button>
+    <button class="nav-btn" data-view="stats"><span class="nav-icon">📊</span><span>Stats</span></button>
+    <button class="nav-btn" data-view="settings"><span class="nav-icon">⚙️</span><span>Settings</span></button>
+  </nav>
+
+  <main class="main">
+
+    <section id="view-dashboard" class="view">
+      <div class="page-head">
+        <h1 class="page-title">The Equal Experts Java Quest</h1>
+        <p class="page-sub">Your 24-week march to becoming an Equal Expert.</p>
+      </div>
+
+      <div id="streakBox" class="streak hidden">
+        <span class="streak-flame">🔥</span>
+        <div>
+          <div class="streak-count" id="streakCount">0</div>
+          <div class="streak-label" id="streakLabel">day streak</div>
+        </div>
+      </div>
+
+      <div class="progress-shell">
+        <div class="progress-top">
+          <span class="progress-label">Overall journey</span>
+          <span class="progress-pct" id="overallPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="overallFill"></div></div>
+        <div class="progress-meta">
+          <span><strong id="weeksDone">0</strong> / 24 weeks</span>
+          <span><strong id="bossDone">0</strong> / 5 bosses</span>
+          <span><strong id="badgesDone">0</strong> / 10 badges</span>
+        </div>
+      </div>
+
+      <div class="quote" id="quoteBox">
+        <span class="quote-text" id="quoteText">Make it work, make it right, make it fast.</span>
+        <span class="quote-author" id="quoteAuthor">— Kent Beck</span>
+      </div>
+
+      <h2 class="section-title">Phases</h2>
+      <div id="phaseGrid" class="grid grid-2"></div>
+    </section>
+
+    <section id="view-phase" class="view hidden">
+      <button class="back-btn" data-back="dashboard">← Back to dashboard</button>
+      <div class="page-head">
+        <div class="phase-num" id="phaseTagNum"></div>
+        <h1 class="page-title" id="phaseTagName"></h1>
+        <p class="page-sub" id="phaseTagRange"></p>
+      </div>
+      <div id="weekList" class="grid"></div>
+      <div id="bossSlot"></div>
+    </section>
+
+    <section id="view-week" class="view hidden">
+      <button class="back-btn" data-back="phase">← Back to phase</button>
+      <div class="page-head">
+        <div class="phase-num" id="weekTagPhase"></div>
+        <h1 class="page-title" id="weekTagTitle"></h1>
+        <p class="page-sub" id="weekTagSub"></p>
+      </div>
+
+      <div class="card week-detail">
+        <h3 class="section-title" style="margin-bottom:14px;">This week's tasks</h3>
+        <div class="task-list" id="taskList"></div>
+      </div>
+
+      <div class="card week-detail">
+        <h3 class="section-title" style="margin-bottom:10px;">Reflection</h3>
+        <p class="page-sub" style="margin-bottom:10px;">What stuck? What would you do differently?</p>
+        <textarea class="reflection" id="reflectionInput" placeholder="Jot down your thoughts…"></textarea>
+      </div>
+
+      <div class="card week-detail">
+        <div class="complete-row">
+          <div>
+            <div class="complete-label">Mark week complete</div>
+            <div class="complete-help" id="completeHelp">Tick all four tasks first.</div>
+          </div>
+          <button class="btn btn-primary" id="completeBtn" disabled>Mark Week Complete</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-badges" class="view hidden">
+      <div class="page-head">
+        <h1 class="page-title">Badge Wall</h1>
+        <p class="page-sub">Unlock as you progress. Each one earned, not given.</p>
+      </div>
+      <div id="badgeGrid" class="badge-grid"></div>
+    </section>
+
+    <section id="view-stats" class="view hidden">
+      <div class="page-head">
+        <h1 class="page-title">Stats</h1>
+        <p class="page-sub">Receipts for the work.</p>
+      </div>
+      <div class="grid grid-2 grid-3">
+        <div class="stat">
+          <div class="stat-label">Weeks complete</div>
+          <div class="stat-value gold"><span id="statWeeks">0</span><span class="of"> / 24</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Bosses defeated</div>
+          <div class="stat-value gold"><span id="statBosses">0</span><span class="of"> / 5</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Current phase</div>
+          <div class="stat-value" id="statPhase" style="font-size:22px;">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Badges earned</div>
+          <div class="stat-value gold"><span id="statBadges">0</span><span class="of"> / 10</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Days since start</div>
+          <div class="stat-value" id="statDays">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Estimated finish</div>
+          <div class="stat-value" id="statFinish" style="font-size:22px;">—</div>
+          <div class="stat-sub" id="statFinishSub"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view hidden">
+      <div class="page-head">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-sub">Configure your quest.</p>
+      </div>
+      <div class="grid">
+        <div class="setting">
+          <div>
+            <div class="setting-label">Start date</div>
+            <div class="setting-desc">When did your 24-week quest begin?</div>
+          </div>
+          <input type="date" id="startDateInput" />
+        </div>
+        <div class="setting">
+          <div>
+            <div class="setting-label">Theme</div>
+            <div class="setting-desc">Dark by default. Light for daylight ops.</div>
+          </div>
+          <button class="switch" id="themeSwitch" aria-label="Toggle theme"></button>
+        </div>
+        <div class="setting">
+          <div>
+            <div class="setting-label">Export progress</div>
+            <div class="setting-desc">Download a JSON snapshot of your progress.</div>
+          </div>
+          <button class="btn" id="exportBtn">Export</button>
+        </div>
+        <div class="setting">
+          <div>
+            <div class="setting-label">Import progress</div>
+            <div class="setting-desc">Restore from a previously exported file.</div>
+          </div>
+          <label class="btn" style="cursor:pointer;">
+            Import
+            <input type="file" id="importInput" accept="application/json" style="display:none;" />
+          </label>
+        </div>
+        <div class="setting">
+          <div>
+            <div class="setting-label">Reset all progress</div>
+            <div class="setting-desc">Wipes weeks, badges, reflections. Cannot be undone.</div>
+          </div>
+          <button class="btn btn-danger" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast">Saved</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Are you sure?</h3>
+    <p id="modalBody">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+      <button class="btn btn-danger" id="modalConfirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="confetti-host" id="confettiHost"></div>
+
+<script>
+/* ===========================================================
+   The Equal Experts Java Quest — single-page app
+   =========================================================== */
+
+/* ---------- Tiny DOM builder (no string-to-markup parsing) ---------- */
+function el(tag, opts, children) {
+  const node = document.createElement(tag);
+  opts = opts || {};
+  if (opts.cls) node.className = opts.cls;
+  if (opts.text != null) node.textContent = String(opts.text);
+  if (opts.attrs) for (const k in opts.attrs) node.setAttribute(k, opts.attrs[k]);
+  if (opts.style) for (const k in opts.style) node.style[k] = opts.style[k];
+  if (opts.cssVars) for (const k in opts.cssVars) node.style.setProperty(k, opts.cssVars[k]);
+  if (opts.on) for (const k in opts.on) node.addEventListener(k, opts.on[k]);
+  if (opts.disabled) node.disabled = true;
+  (children || []).forEach(c => {
+    if (c == null || c === false) return;
+    if (typeof c === "string" || typeof c === "number") node.appendChild(document.createTextNode(String(c)));
+    else node.appendChild(c);
+  });
+  return node;
+}
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+function $(id) { return document.getElementById(id); }
+
+/* ---------- Static data ---------- */
+
+const QUOTES = [
+  { t: "Make it work, make it right, make it fast.", a: "Kent Beck" },
+  { t: "I'm not a great programmer; I'm just a good programmer with great habits.", a: "Kent Beck" },
+  { t: "TDD is not about testing; it's about design.", a: "Kent Beck" },
+  { t: "First make the change easy, then make the easy change.", a: "Kent Beck" },
+  { t: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", a: "Martin Fowler" },
+  { t: "Refactoring is a controlled technique for improving the design of an existing code base.", a: "Martin Fowler" },
+  { t: "The only way to go fast is to go well.", a: "Robert C. Martin" },
+  { t: "Truth can only be found in one place: the code.", a: "Robert C. Martin" },
+  { t: "Continuous delivery is the ability to get changes of all types into production safely and quickly in a sustainable way.", a: "Dave Farley" },
+  { t: "Software engineering is the application of an empirical, scientific approach to finding efficient, economic solutions to practical problems in software.", a: "Dave Farley" },
+  { t: "Clean code always looks like it was written by someone who cares.", a: "Robert C. Martin" },
+  { t: "Programs must be written for people to read, and only incidentally for machines to execute.", a: "Harold Abelson" },
+  { t: "Simplicity is prerequisite for reliability.", a: "Edsger Dijkstra" }
+];
+
+const TASK_CATEGORIES = [
+  { key: "reading",    label: "O'Reilly reading" },
+  { key: "pluralsight",label: "Pluralsight course" },
+  { key: "coding",     label: "Coding / kata / project" },
+  { key: "youtube",    label: "YouTube / AlgoExpert" }
+];
+
+const PHASES = [
+  {
+    id: "p1", num: "Phase 1", name: "The TDD Awakening", range: "Weeks 1–4", color: "#7C3AED",
+    boss: {
+      title: "Fully TDD'd Shopping Cart",
+      desc: "Build a shopping cart end-to-end with TDD. Every behaviour driven by a failing test first."
+    },
+    weeks: [
+      { id: "w1", n: 1, title: "Java Sharpening & Tooling Setup", tasks: [
+        "Read 'Effective Java' Ch 1–2 (Bloch)",
+        "Pluralsight: Java Fundamentals — modern syntax & build tools",
+        "Set up IntelliJ + Maven/Gradle; write first JUnit 5 test",
+        "Watch a Java 21 features overview on YouTube"
+      ]},
+      { id: "w2", n: 2, title: "TDD — Red, Green, Refactor", tasks: [
+        "Read 'Test-Driven Development by Example' Ch 1–5 (Kent Beck)",
+        "Pluralsight: TDD with JUnit 5",
+        "FizzBuzz + String Calculator katas, strictly Red-Green-Refactor",
+        "Watch Kent Beck's TDD demo talk"
+      ]},
+      { id: "w3", n: 3, title: "Kata Immersion", tasks: [
+        "Read 'Growing Object-Oriented Software' Ch 1–3 (Freeman & Pryce)",
+        "Pluralsight: Refactoring fundamentals",
+        "Bowling Game + Roman Numerals + Mars Rover katas",
+        "Watch Coding Dojo recordings on YouTube"
+      ]},
+      { id: "w4", n: 4, title: "Mocking, Stubs & Testing Patterns", tasks: [
+        "Read 'Working Effectively with Unit Tests' Ch 1–4 (Jay Fields)",
+        "Pluralsight: Mockito Fundamentals",
+        "Rebuild a kata using mocks, stubs and fakes",
+        "Watch 'Test Doubles Explained' (Martin Fowler talk)"
+      ]}
+    ]
+  },
+  {
+    id: "p2", num: "Phase 2", name: "Spring Boot & The Backend Craft", range: "Weeks 5–9", color: "#0EA5E9",
+    boss: {
+      title: "Production-Ready REST API on GitHub",
+      desc: "Ship a Spring Boot REST API with tests, persistence, validation, error handling and a clean README."
+    },
+    weeks: [
+      { id: "w5", n: 5, title: "Spring Boot Foundations", tasks: [
+        "Read 'Spring Boot in Action' Ch 1–2",
+        "Pluralsight: Spring Boot Getting Started",
+        "Build a Spring Boot app with DI + auto-config exploration",
+        "Watch 'Spring Boot in 100 Minutes' on YouTube"
+      ]},
+      { id: "w6", n: 6, title: "REST APIs Done Right", tasks: [
+        "Read 'REST in Practice' Ch 1–4",
+        "Pluralsight: Building REST APIs with Spring",
+        "Build CRUD endpoints with validation + global error handling",
+        "Watch a talk on REST API best practices"
+      ]},
+      { id: "w7", n: 7, title: "Databases — JPA, Hibernate & SQL", tasks: [
+        "Read selected chapters of 'Java Persistence with Hibernate'",
+        "Pluralsight: Spring Data JPA Fundamentals",
+        "Persist entities + Testcontainers integration tests",
+        "Watch a Hibernate internals deep dive"
+      ]},
+      { id: "w8", n: 8, title: "Testing the Spring Stack", tasks: [
+        "Read 'Spring in Action' testing chapter",
+        "Pluralsight: Testing Spring Boot Applications",
+        "Write MockMvc + @SpringBootTest + slice tests",
+        "Watch a talk on the Spring testing pyramid"
+      ]},
+      { id: "w9", n: 9, title: "Code Quality & Craft", tasks: [
+        "Read 'Clean Code' Ch 1–4 (Uncle Bob)",
+        "Pluralsight: Refactoring to Patterns",
+        "Run SonarLint + refactor code smells in your API",
+        "Watch a Clean Code talk by Robert C. Martin"
+      ]}
+    ]
+  },
+  {
+    id: "p3", num: "Phase 3", name: "Distributed Systems & Cloud", range: "Weeks 10–14", color: "#10B981",
+    boss: {
+      title: "Docker + GitHub Actions CI Pipeline",
+      desc: "Containerise your service and ship a green CI pipeline that builds, tests and pushes the image."
+    },
+    weeks: [
+      { id: "w10", n: 10, title: "Microservices Architecture", tasks: [
+        "Read 'Building Microservices' Ch 1–3 (Sam Newman)",
+        "Pluralsight: Microservices Architecture",
+        "Split a monolith into two services with REST calls",
+        "Watch a microservices patterns talk by Chris Richardson"
+      ]},
+      { id: "w11", n: 11, title: "Docker", tasks: [
+        "Read 'Docker Deep Dive' Ch 1–4",
+        "Pluralsight: Docker Fundamentals",
+        "Containerise your Spring Boot app + docker-compose stack",
+        "Watch a Docker networking explainer"
+      ]},
+      { id: "w12", n: 12, title: "Messaging & Events", tasks: [
+        "Read 'Designing Event-Driven Systems' (Ben Stopford)",
+        "Pluralsight: Apache Kafka Fundamentals",
+        "Wire a Kafka producer/consumer in Spring",
+        "Watch a Kafka deep dive on YouTube"
+      ]},
+      { id: "w13", n: 13, title: "CI/CD Pipelines", tasks: [
+        "Read 'Continuous Delivery' Ch 1–4 (Dave Farley)",
+        "Pluralsight: GitHub Actions Fundamentals",
+        "Build a CI workflow: tests + lint + container build",
+        "Watch a Dave Farley CI/CD episode"
+      ]},
+      { id: "w14", n: 14, title: "Cloud Fundamentals & System Design", tasks: [
+        "Read 'Designing Data-Intensive Applications' Ch 1–2",
+        "Pluralsight: System Design Fundamentals",
+        "Deploy a service to AWS free tier (ECS or EB)",
+        "Watch an AlgoExpert system design walkthrough"
+      ]}
+    ]
+  },
+  {
+    id: "p4", num: "Phase 4", name: "Pair Programming & Consultancy Polish", range: "Weeks 15–20", color: "#F97316",
+    boss: {
+      title: "Full EE Mock Interview — All 4 Rounds",
+      desc: "Run a complete Equal Experts-style mock: tech screen, pairing, consultancy chat and architecture deep dive."
+    },
+    weeks: [
+      { id: "w15", n: 15, title: "The Art of Pair Programming (Part 1)", tasks: [
+        "Read 'Pair Programming Illuminated' Ch 1–4",
+        "Pluralsight: Effective Pairing",
+        "Pair on a kata via Live Share or Code With Me",
+        "Watch a recorded pairing session on YouTube"
+      ]},
+      { id: "w16", n: 16, title: "The Art of Pair Programming (Part 2)", tasks: [
+        "Read 'Pair Programming Illuminated' Ch 5–end",
+        "Pluralsight: Advanced Pairing Techniques",
+        "Driver/Navigator rotation kata with a peer",
+        "Watch a mob programming session"
+      ]},
+      { id: "w17", n: 17, title: "Consultancy Mindset (Part 1)", tasks: [
+        "Read 'The Trusted Advisor' Ch 1–5",
+        "Pluralsight: Consulting Fundamentals",
+        "Run a mock client requirements-gathering exercise",
+        "Watch a ThoughtWorks consultancy talk"
+      ]},
+      { id: "w18", n: 18, title: "Consultancy Mindset (Part 2)", tasks: [
+        "Read 'The Trusted Advisor' Ch 6–end",
+        "Pluralsight: Stakeholder Communication",
+        "Write an ADR (Architecture Decision Record) for a past project",
+        "Watch a tech leadership / influence talk"
+      ]},
+      { id: "w19", n: 19, title: "Architecture Deep Dives (Part 1)", tasks: [
+        "Read 'Software Architecture: The Hard Parts' Ch 1–5",
+        "Pluralsight: Architecture Patterns",
+        "Diagram your system using the C4 model",
+        "Watch a Mark Richards architecture session"
+      ]},
+      { id: "w20", n: 20, title: "Architecture Deep Dives (Part 2)", tasks: [
+        "Read 'Software Architecture: The Hard Parts' Ch 6–end",
+        "Pluralsight: Distributed Systems Design",
+        "Whiteboard a system design dry-run on a real problem",
+        "Watch a Software Engineering Daily episode"
+      ]}
+    ]
+  },
+  {
+    id: "p5", num: "Phase 5", name: "Portfolio, Application & Final Sprint", range: "Weeks 21–24", color: "#EF4444",
+    boss: {
+      title: "Apply to Equal Experts — Get the Offer",
+      desc: "Submit the application, tailor the cover letter, prep the interview loop, land the offer."
+    },
+    weeks: [
+      { id: "w21", n: 21, title: "Portfolio Audit & Polish", tasks: [
+        "Read 'The Pragmatic Programmer' Ch 1–3",
+        "Pluralsight: GitHub for Developers",
+        "Polish 3 portfolio repos: READMEs, tests, CI badges",
+        "Watch a GitHub portfolio walkthrough"
+      ]},
+      { id: "w22", n: 22, title: "CV & LinkedIn Polish", tasks: [
+        "Read CV chapter from 'Cracking the Coding Career'",
+        "Pluralsight: LinkedIn for Developers",
+        "Rewrite CV + overhaul LinkedIn profile",
+        "Watch a tech CV review session on YouTube"
+      ]},
+      { id: "w23", n: 23, title: "Final Mock Interview", tasks: [
+        "Read selected chapters of 'Cracking the Coding Interview'",
+        "Pluralsight: Behavioural Interview Prep",
+        "Run two timed mock interviews with a peer",
+        "Solve 3 AlgoExpert system design problems"
+      ]},
+      { id: "w24", n: 24, title: "Application & Final Preparation", tasks: [
+        "Deep-read the Equal Experts blog + careers page",
+        "Pluralsight: Salary Negotiation",
+        "Submit application + tailored cover letter",
+        "Watch Equal Experts talks/podcasts on YouTube"
+      ]}
+    ]
+  }
+];
+
+const BADGES = [
+  { id: "redLight",    name: "Red Light",        icon: "🔴", desc: "Wrote your first failing test.",          check: s => isWeekComplete(s, "w2") },
+  { id: "greenLight",  name: "Green Light",      icon: "🟢", desc: "Made the failing test pass.",             check: s => isWeekComplete(s, "w2") },
+  { id: "refactor",    name: "Refactor Hero",    icon: "🛠️", desc: "Cleaned it up without breaking it.",      check: s => isWeekComplete(s, "w3") },
+  { id: "cart",        name: "Cart Conqueror",   icon: "🛒", desc: "Phase 1 boss defeated.",                  check: s => s.bossBattles.p1 },
+  { id: "api",         name: "API Architect",    icon: "🌐", desc: "Phase 2 boss defeated.",                  check: s => s.bossBattles.p2 },
+  { id: "whale",       name: "Whale Whisperer",  icon: "🐳", desc: "Tamed Docker. Week 11 complete.",         check: s => isWeekComplete(s, "w11") },
+  { id: "pipeline",    name: "Pipeline Pro",     icon: "⚙️", desc: "Shipped a CI pipeline. Week 13 complete.",check: s => isWeekComplete(s, "w13") },
+  { id: "pair",        name: "Pair Magician",    icon: "🧙", desc: "Pair programming, mastered.",             check: s => isWeekComplete(s, "w16") },
+  { id: "consultant",  name: "Consultant Voice", icon: "🎙️", desc: "Speaks fluent client.",                   check: s => isWeekComplete(s, "w18") },
+  { id: "equalExpert", name: "Equal Expert",     icon: "👑", desc: "All 24 weeks. All 5 bosses. The offer.",  check: s => allDone(s) }
+];
+
+/* ---------- State ---------- */
+
+const STORAGE_KEY = "eeq_progress";
+
+function defaultState() {
+  const progress = {};
+  PHASES.forEach(p => p.weeks.forEach(w => {
+    progress[w.id] = { tasks: [false, false, false, false], reflection: "", complete: false };
+  }));
+  return {
+    progress,
+    bossBattles: { p1:false, p2:false, p3:false, p4:false, p5:false },
+    achievements: [],
+    startDate: todayStr(),
+    theme: "dark",
+    lastCheckIn: null,
+    streak: 0
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    const base = defaultState();
+    return {
+      ...base,
+      ...parsed,
+      progress: { ...base.progress, ...(parsed.progress || {}) },
+      bossBattles: { ...base.bossBattles, ...(parsed.bossBattles || {}) },
+      achievements: parsed.achievements || []
+    };
+  } catch (e) {
+    console.warn("Could not parse stored state, starting fresh", e);
+    return defaultState();
+  }
+}
+
+let state = loadState();
+const pendingBadgePop = new Set();
+let currentPhaseId = null;
+let currentWeekId = null;
+
+function saveState(showToast) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (showToast !== false) toast("Saved");
+  } catch (e) {
+    console.error("Save failed", e);
+    toast("Save failed", true);
+  }
+}
+
+/* ---------- Helpers ---------- */
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function isWeekComplete(s, weekId) { return s.progress[weekId] && s.progress[weekId].complete; }
+
+function phaseWeeksComplete(s, phase) {
+  return phase.weeks.filter(w => isWeekComplete(s, w.id)).length;
+}
+function phaseAllWeeksComplete(s, phase) {
+  return phase.weeks.every(w => isWeekComplete(s, w.id));
+}
+
+function phaseStatus(s, phase) {
+  const done = phaseAllWeeksComplete(s, phase) && s.bossBattles[phase.id];
+  if (done) return { key: "complete", label: "Complete" };
+  if (phaseAllWeeksComplete(s, phase)) return { key: "boss-unlocked", label: "Boss Unlocked" };
+  const inProgress = phaseWeeksComplete(s, phase) > 0;
+  if (inProgress) return { key: "in-progress", label: "In Progress" };
+  const idx = PHASES.findIndex(p => p.id === phase.id);
+  if (idx === 0) return { key: "in-progress", label: "Ready" };
+  const prevDone = phaseAllWeeksComplete(s, PHASES[idx-1]) && s.bossBattles[PHASES[idx-1].id];
+  return prevDone ? { key: "in-progress", label: "Ready" } : { key: "locked", label: "Locked" };
+}
+
+function allWeeks() { return PHASES.flatMap(p => p.weeks); }
+function totalWeeksComplete(s) { return allWeeks().filter(w => isWeekComplete(s, w.id)).length; }
+function totalBossesComplete(s) { return Object.values(s.bossBattles).filter(Boolean).length; }
+function totalBadgesEarned(s) { return s.achievements.length; }
+function allDone(s) { return totalWeeksComplete(s) === 24 && totalBossesComplete(s) === 5; }
+
+function findPhaseForWeek(weekId) { return PHASES.find(p => p.weeks.some(w => w.id === weekId)); }
+
+function currentPhase(s) {
+  for (const p of PHASES) {
+    if (phaseStatus(s, p).key !== "complete") return p;
+  }
+  return PHASES[PHASES.length - 1];
+}
+
+function currentWeek(s) {
+  for (const p of PHASES) {
+    for (const w of p.weeks) {
+      if (!isWeekComplete(s, w.id)) return { phase: p, week: w };
+    }
+  }
+  const last = PHASES[PHASES.length-1];
+  return { phase: last, week: last.weeks[last.weeks.length-1] };
+}
+
+function daysBetween(a, b) {
+  const A = new Date(a), B = new Date(b);
+  A.setHours(0,0,0,0); B.setHours(0,0,0,0);
+  return Math.round((B - A) / 86400000);
+}
+
+/* ---------- Achievements & streak ---------- */
+
+function refreshAchievements(silent) {
+  const newOnes = [];
+  BADGES.forEach(b => {
+    const earned = b.check(state);
+    const has = state.achievements.includes(b.id);
+    if (earned && !has) { state.achievements.push(b.id); newOnes.push(b); }
+    else if (!earned && has) { state.achievements = state.achievements.filter(x => x !== b.id); }
+  });
+  if (!silent && newOnes.length) {
+    newOnes.forEach(b => {
+      pendingBadgePop.add(b.id);
+      toast("Badge unlocked: " + b.name + " " + b.icon);
+    });
+    fireConfetti();
+  }
+  return newOnes.length > 0;
+}
+
+function bumpStreak() {
+  const today = todayStr();
+  if (state.lastCheckIn === today) return;
+  if (state.lastCheckIn) {
+    const diff = daysBetween(state.lastCheckIn, today);
+    if (diff === 1) state.streak += 1;
+    else if (diff > 1) state.streak = 1;
+  } else {
+    state.streak = 1;
+  }
+  state.lastCheckIn = today;
+}
+
+function maybeResetStreakOnLoad() {
+  if (!state.lastCheckIn) return;
+  const diff = daysBetween(state.lastCheckIn, todayStr());
+  if (diff > 1) state.streak = 0;
+}
+
+/* ---------- Views ---------- */
+
+function setView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+  const target = $("view-" + name);
+  if (target) target.classList.remove("hidden");
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === name);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ---------- Renderers ---------- */
+
+function renderDashboard() {
+  const streakBox = $("streakBox");
+  if (state.streak > 0) {
+    streakBox.classList.remove("hidden");
+    $("streakCount").textContent = state.streak;
+    $("streakLabel").textContent = "day streak — keep going";
+  } else {
+    streakBox.classList.add("hidden");
+  }
+
+  const weeks = totalWeeksComplete(state);
+  const bosses = totalBossesComplete(state);
+  const badges = totalBadgesEarned(state);
+  const totalUnits = 24 + 5;
+  const completedUnits = weeks + bosses;
+  const pct = Math.round((completedUnits / totalUnits) * 100);
+  requestAnimationFrame(() => { $("overallFill").style.width = pct + "%"; });
+  $("overallPct").textContent = pct + "%";
+  $("weeksDone").textContent = weeks;
+  $("bossDone").textContent = bosses;
+  $("badgesDone").textContent = badges;
+
+  const start = state.startDate || todayStr();
+  const dayIndex = Math.max(0, daysBetween(start, todayStr()));
+  const q = QUOTES[dayIndex % QUOTES.length];
+  $("quoteText").textContent = "“" + q.t + "”";
+  $("quoteAuthor").textContent = "— " + q.a;
+
+  const grid = $("phaseGrid");
+  clear(grid);
+  const cur = currentPhase(state);
+  PHASES.forEach(p => {
+    const status = phaseStatus(state, p);
+    const done = phaseWeeksComplete(state, p);
+    const total = p.weeks.length;
+    const fillPct = Math.round((done / total) * 100);
+
+    const chipBoss = state.bossBattles[p.id]
+      ? el("span", { cls: "chip good", text: "Boss ✓" })
+      : null;
+
+    const card = el("div", {
+      cls: "phase-card" + (p.id === cur.id ? " current" : ""),
+      cssVars: { "--phase-color": p.color },
+      on: { click: () => openPhase(p.id) }
+    }, [
+      el("div", { cls: "phase-num", text: p.num }),
+      el("div", { cls: "phase-name", text: p.name }),
+      el("div", { cls: "phase-range", text: p.range }),
+      el("span", { cls: "phase-status " + status.key, text: status.label }),
+      el("div", { cls: "phase-progress" }, [
+        el("div", { cls: "phase-progress-fill", style: { width: fillPct + "%" } })
+      ]),
+      el("div", { cls: "chips" }, [
+        el("span", { cls: "chip" }, [
+          el("strong", { text: String(done) }),
+          " / " + total + " weeks"
+        ]),
+        chipBoss
+      ])
+    ]);
+    grid.appendChild(card);
+  });
+}
+
+function openPhase(phaseId) {
+  currentPhaseId = phaseId;
+  const phase = PHASES.find(p => p.id === phaseId);
+  if (!phase) return;
+
+  $("phaseTagNum").textContent = phase.num;
+  $("phaseTagName").textContent = phase.name;
+  $("phaseTagRange").textContent = phase.range;
+
+  const wrap = $("weekList");
+  clear(wrap);
+  const cur = currentWeek(state).week;
+  phase.weeks.forEach(w => {
+    const wp = state.progress[w.id];
+    const done = wp && wp.complete;
+    const ticks = wp ? wp.tasks.filter(Boolean).length : 0;
+    const card = el("div", {
+      cls: "week-card" + (done ? " complete" : "") + (w.id === cur.id && !done ? " current" : ""),
+      cssVars: { "--phase-color": phase.color },
+      on: { click: () => openWeek(w.id) }
+    }, [
+      el("div", { cls: "week-num-tag", text: "W" + w.n }),
+      el("div", { cls: "week-info" }, [
+        el("div", { cls: "week-title", text: w.title }),
+        el("div", { cls: "week-meta", text: ticks + "/4 tasks" + (wp && wp.reflection ? " · reflection saved" : "") })
+      ]),
+      done
+        ? el("span", { cls: "week-check", text: "✓" })
+        : el("span", { cls: "week-arrow", text: "→" })
+    ]);
+    wrap.appendChild(card);
+  });
+
+  const bossSlot = $("bossSlot");
+  clear(bossSlot);
+  const bossUnlocked = phaseAllWeeksComplete(state, phase);
+  const bossDone = state.bossBattles[phase.id];
+  const bossCls = "boss-card " + (bossDone ? "complete" : (bossUnlocked ? "unlocked" : "locked"));
+  const bossTagText = bossDone ? "Boss defeated" : (bossUnlocked ? "Boss unlocked" : "Boss locked");
+
+  const bossBtn = el("button", {
+    cls: "btn" + (bossDone ? "" : " btn-primary"),
+    text: bossDone ? "✓ Boss Defeated" : (bossUnlocked ? "Mark Boss Defeated" : "Complete all weeks to unlock"),
+    disabled: !bossUnlocked,
+    on: bossUnlocked && !bossDone
+      ? { click: () => {
+          state.bossBattles[phase.id] = true;
+          bumpStreak();
+          refreshAchievements();
+          saveState();
+          fireConfetti();
+          openPhase(phaseId);
+          renderDashboard();
+          renderStats();
+        }}
+      : {}
+  });
+
+  const bossCard = el("div", {
+    cls: bossCls,
+    cssVars: { "--phase-color": phase.color }
+  }, [
+    el("div", { cls: "boss-tag", text: bossTagText }),
+    el("div", { cls: "boss-title", text: "⚔️ " + phase.boss.title }),
+    el("div", { cls: "boss-desc", text: phase.boss.desc }),
+    bossBtn
+  ]);
+  bossSlot.appendChild(bossCard);
+
+  setView("phase");
+}
+
+function openWeek(weekId) {
+  currentWeekId = weekId;
+  const week = allWeeks().find(w => w.id === weekId);
+  const phase = findPhaseForWeek(weekId);
+  if (!week || !phase) return;
+
+  $("weekTagPhase").textContent = phase.num + " · " + phase.name;
+  $("weekTagTitle").textContent = "Week " + week.n + ": " + week.title;
+  $("weekTagSub").textContent = "Tick each task as you finish it.";
+
+  const wp = state.progress[weekId];
+  const list = $("taskList");
+  clear(list);
+  week.tasks.forEach((label, i) => {
+    const done = !!wp.tasks[i];
+    const item = el("div", {
+      cls: "task-item" + (done ? " done" : ""),
+      cssVars: { "--phase-color": phase.color },
+      on: { click: () => {
+        wp.tasks[i] = !wp.tasks[i];
+        bumpStreak();
+        saveState();
+        refreshAchievements();
+        openWeek(weekId);
+        renderDashboard();
+        renderStats();
+      }}
+    }, [
+      el("span", { cls: "task-checkbox", attrs: { "aria-hidden": "true" } }),
+      el("div", { cls: "task-body" }, [
+        el("div", { cls: "task-cat", text: TASK_CATEGORIES[i].label }),
+        el("div", { cls: "task-label", text: label })
+      ])
+    ]);
+    list.appendChild(item);
+  });
+
+  const refl = $("reflectionInput");
+  refl.value = wp.reflection || "";
+  refl.oninput = () => {
+    wp.reflection = refl.value;
+    clearTimeout(refl._t);
+    refl._t = setTimeout(() => saveState(false), 400);
+  };
+
+  const ticks = wp.tasks.filter(Boolean).length;
+  const allTicked = ticks === 4;
+  const btn = $("completeBtn");
+  btn.disabled = !allTicked || wp.complete;
+  btn.textContent = wp.complete ? "✓ Week Complete" : "Mark Week Complete";
+  btn.style.background = phase.color;
+  btn.style.borderColor = phase.color;
+  btn.style.color = "white";
+  $("completeHelp").textContent = wp.complete
+    ? "Locked in. Onward."
+    : (allTicked ? "All tasks done — mark it complete." : ticks + "/4 tasks done — tick all four to enable.");
+
+  btn.onclick = () => {
+    if (!allTicked || wp.complete) return;
+    wp.complete = true;
+    bumpStreak();
+    saveState();
+    refreshAchievements();
+    fireConfetti();
+    openWeek(weekId);
+    renderDashboard();
+    renderStats();
+  };
+
+  setView("week");
+}
+
+function renderBadges() {
+  const grid = $("badgeGrid");
+  clear(grid);
+  BADGES.forEach(b => {
+    const earned = state.achievements.includes(b.id);
+    const isNew = pendingBadgePop.has(b.id);
+    const node = el("div", {
+      cls: "badge " + (earned ? "unlocked" : "locked") + (isNew ? " new" : "")
+    }, [
+      el("span", { cls: "badge-icon", text: earned ? b.icon : "🔒" }),
+      el("div", { cls: "badge-name", text: b.name }),
+      el("div", { cls: "badge-desc", text: earned ? b.desc : "Locked" })
+    ]);
+    grid.appendChild(node);
+    if (isNew) setTimeout(() => pendingBadgePop.delete(b.id), 1000);
+  });
+}
+
+function renderStats() {
+  const weeks = totalWeeksComplete(state);
+  const bosses = totalBossesComplete(state);
+  const badges = totalBadgesEarned(state);
+  const cp = currentPhase(state);
+  $("statWeeks").textContent = weeks;
+  $("statBosses").textContent = bosses;
+  $("statBadges").textContent = badges;
+  $("statPhase").textContent = cp.num + " — " + cp.name;
+
+  const start = state.startDate || todayStr();
+  const days = Math.max(0, daysBetween(start, todayStr()));
+  $("statDays").textContent = days;
+
+  const finishEl = $("statFinish");
+  const finishSubEl = $("statFinishSub");
+  if (weeks === 0) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + 24 * 7);
+    finishEl.textContent = d.toISOString().slice(0,10);
+    finishSubEl.textContent = "Default 24-week target";
+  } else {
+    const daysPerWeekDone = days / weeks;
+    const remaining = 24 - weeks;
+    const projectedDays = Math.round(remaining * daysPerWeekDone);
+    const d = new Date();
+    d.setDate(d.getDate() + projectedDays);
+    finishEl.textContent = d.toISOString().slice(0,10);
+    finishSubEl.textContent = "At current pace (" + daysPerWeekDone.toFixed(1) + " days/week)";
+  }
+}
+
+function renderSettings() {
+  $("startDateInput").value = state.startDate || todayStr();
+  $("themeSwitch").classList.toggle("on", state.theme === "light");
+}
+
+/* ---------- Toast ---------- */
+
+let toastTimer = null;
+function toast(msg, isError) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.style.color = isError ? "var(--p5)" : "var(--p3)";
+  t.style.borderColor = isError ? "var(--p5)" : "var(--p3)";
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+/* ---------- Confetti ---------- */
+
+function fireConfetti() {
+  const host = $("confettiHost");
+  const colors = ["#7C3AED","#0EA5E9","#10B981","#F97316","#EF4444","#F59E0B","#F0F4F8"];
+  const N = 60;
+  for (let i = 0; i < N; i++) {
+    const piece = el("div", {
+      cls: "confetti-piece",
+      style: {
+        left: (Math.random() * 100) + "vw",
+        background: colors[Math.floor(Math.random() * colors.length)],
+        animationDelay: (Math.random() * .4) + "s",
+        animationDuration: (1.8 + Math.random() * 1.2) + "s",
+        transform: "rotate(" + (Math.random() * 360) + "deg)"
+      }
+    });
+    host.appendChild(piece);
+    setTimeout(() => piece.remove(), 3200);
+  }
+}
+
+/* ---------- Modal ---------- */
+
+function confirmModal(opts) {
+  return new Promise(resolve => {
+    $("modalTitle").textContent = opts.title;
+    $("modalBody").textContent = opts.body;
+    $("modalConfirm").textContent = opts.confirmText || "Confirm";
+    $("modalCancel").textContent = opts.cancelText || "Cancel";
+    const m = $("modal");
+    m.classList.add("show");
+    const close = (v) => {
+      m.classList.remove("show");
+      $("modalConfirm").onclick = null;
+      $("modalCancel").onclick = null;
+      resolve(v);
+    };
+    $("modalConfirm").onclick = () => close(true);
+    $("modalCancel").onclick = () => close(false);
+  });
+}
+
+/* ---------- Export / import ---------- */
+
+function exportProgress() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = el("a", { attrs: { href: url, download: "ee-java-quest-" + todayStr() + ".json" } });
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+  toast("Exported");
+}
+
+function importProgress(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || !data.progress) throw new Error("Invalid progress file");
+      const base = defaultState();
+      state = {
+        ...base,
+        ...data,
+        progress: { ...base.progress, ...(data.progress || {}) },
+        bossBattles: { ...base.bossBattles, ...(data.bossBattles || {}) },
+        achievements: data.achievements || []
+      };
+      maybeResetStreakOnLoad();
+      refreshAchievements(true);
+      saveState(false);
+      applyTheme();
+      renderDashboard();
+      renderBadges();
+      renderStats();
+      renderSettings();
+      setView("dashboard");
+      toast("Imported");
+    } catch (err) {
+      console.error(err);
+      toast("Import failed", true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- Theme ---------- */
+
+function applyTheme() {
+  document.body.setAttribute("data-theme", state.theme || "dark");
+}
+
+/* ---------- Boot ---------- */
+
+function init() {
+  applyTheme();
+  maybeResetStreakOnLoad();
+  refreshAchievements(true);
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const v = btn.dataset.view;
+      if (v === "badges") renderBadges();
+      if (v === "stats") renderStats();
+      if (v === "settings") renderSettings();
+      if (v === "dashboard") renderDashboard();
+      setView(v);
+    });
+  });
+
+  document.querySelectorAll("[data-back]").forEach(b => {
+    b.addEventListener("click", () => {
+      const back = b.dataset.back;
+      if (back === "phase" && currentPhaseId) openPhase(currentPhaseId);
+      else setView("dashboard");
+    });
+  });
+
+  $("startDateInput").addEventListener("change", e => {
+    state.startDate = e.target.value;
+    saveState();
+    renderDashboard();
+    renderStats();
+  });
+
+  $("themeSwitch").addEventListener("click", () => {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    applyTheme();
+    saveState();
+    renderSettings();
+  });
+
+  $("exportBtn").addEventListener("click", exportProgress);
+
+  $("importInput").addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (f) importProgress(f);
+    e.target.value = "";
+  });
+
+  $("resetBtn").addEventListener("click", async () => {
+    const ok = await confirmModal({
+      title: "Reset all progress?",
+      body: "This wipes every checkbox, every reflection, every badge. There is no undo.",
+      confirmText: "Reset everything"
+    });
+    if (!ok) return;
+    state = defaultState();
+    saveState(false);
+    applyTheme();
+    renderDashboard();
+    renderBadges();
+    renderStats();
+    renderSettings();
+    setView("dashboard");
+    toast("Reset done");
+  });
+
+  renderDashboard();
+  renderBadges();
+  renderStats();
+  renderSettings();
+  setView("dashboard");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
