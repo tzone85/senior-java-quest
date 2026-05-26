@@ -1,8 +1,8 @@
-# The Equal Experts Java Quest
+# The Senior Java Quest
 
-A personal accountability tracker for a 24-week Java Developer study plan — the path to landing a role at Equal Experts. Zero-dependency single-page web app, plus a pair of scheduled remote agents that send daily personalised reminders.
+A personal accountability tracker for a 24-week Java Developer study plan — a structured path toward a senior consultancy role. Zero-dependency single-page web app, plus a pair of scheduled remote agents that send daily personalised reminders.
 
-> **Status:** in active use · **Quest start date:** 2026-05-27 · **Target:** EE application after Week 24
+> **Status:** in active use · **Quest start date:** 2026-05-27 · **Target:** consultancy application after Week 24
 
 ---
 
@@ -88,7 +88,7 @@ Reminder logic (read `state.json` → compute gap vs calendar → emit markdown)
 ## Project layout
 
 ```
-ee-java-quest/
+senior-java-quest/
 ├── index.html                  # The app shell (DOM, IO, theme, sync)
 ├── lib/
 │   └── quest-core.js           # Pure domain: PHASES, BADGES, helpers

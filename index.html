@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Equal Experts Java Quest</title>
+<title>The Senior Java Quest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -686,7 +686,7 @@
 <div class="app">
 
   <nav class="nav" aria-label="Primary">
-    <span class="nav-brand">EE <span class="accent">Java Quest</span></span>
+    <span class="nav-brand">Senior <span class="accent">Java Quest</span></span>
     <button class="nav-btn active" data-view="dashboard"><span class="nav-icon">🏠</span><span>Home</span></button>
     <button class="nav-btn" data-view="badges"><span class="nav-icon">🏆</span><span>Badges</span></button>
     <button class="nav-btn" data-view="stats"><span class="nav-icon">📊</span><span>Stats</span></button>
@@ -697,8 +697,8 @@
 
     <section id="view-dashboard" class="view">
       <div class="page-head">
-        <h1 class="page-title">The Equal Experts Java Quest</h1>
-        <p class="page-sub">Your 24-week march to becoming an Equal Expert.</p>
+        <h1 class="page-title">The Senior Java Quest</h1>
+        <p class="page-sub">Your 24-week march to senior Java craft.</p>
       </div>
 
       <div id="streakBox" class="streak hidden">
@@ -844,7 +844,7 @@
           </div>
           <div class="sync-grid">
             <input type="text" id="syncOwner" placeholder="owner (e.g. tzone85)" autocomplete="off" />
-            <input type="text" id="syncRepo" placeholder="repo (e.g. ee-java-quest)" autocomplete="off" />
+            <input type="text" id="syncRepo" placeholder="repo (e.g. senior-java-quest)" autocomplete="off" />
             <input type="text" id="syncBranch" placeholder="branch (main)" autocomplete="off" />
           </div>
           <input type="password" id="syncToken" placeholder="GitHub personal access token (PAT)" autocomplete="off" />
@@ -899,7 +899,7 @@
 <script src="lib/quest-core.js"></script>
 <script>
 /* ===========================================================
-   The Equal Experts Java Quest — single-page app
+   The Senior Java Quest — single-page app
    Adapter shell. All pure logic lives in lib/quest-core.js.
    =========================================================== */
 
@@ -943,7 +943,7 @@ const STORAGE_KEY = "eeq_progress";
 const SYNC_KEY = "eeq_sync";
 
 function defaultSyncConfig() {
-  return { owner: "tzone85", repo: "ee-java-quest", branch: "main", token: "", lastSynced: null, lastStatus: "" };
+  return { owner: "tzone85", repo: "senior-java-quest", branch: "main", token: "", lastSynced: null, lastStatus: "" };
 }
 function loadSyncConfig() {
   try {
@@ -1032,7 +1032,7 @@ async function syncToGitHub(silent) {
       throw new Error("HEAD HTTP " + head.status);
     }
     const body = {
-      message: "chore: sync EE Java Quest progress",
+      message: "chore: sync Senior Java Quest progress",
       content: utf8ToBase64(JSON.stringify(state, null, 2)),
       branch
     };
@@ -1459,7 +1459,7 @@ function confirmModal(opts) {
 function exportProgress() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = el("a", { attrs: { href: url, download: "ee-java-quest-" + todayStr() + ".json" } });
+  const a = el("a", { attrs: { href: url, download: "senior-java-quest-" + todayStr() + ".json" } });
   document.body.appendChild(a);
   a.click();
   setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);

@@ -14,7 +14,7 @@ flowchart TB
     subgraph Cloud["External services"]
         direction TB
         GHAPI["GitHub REST API<br/>/repos/.../contents/state.json"]
-        Repo[("Repo: tzone85/ee-java-quest")]
+        Repo[("Repo: tzone85/senior-java-quest")]
         CronAgent["Scheduled Remote Agent<br/>(Claude Sonnet 4.6)"]
         GHAPI --> Repo
         CronAgent -->|git clone| Repo

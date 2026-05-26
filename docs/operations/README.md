@@ -61,7 +61,7 @@ Optional. Without it, reminders fall back to calendar-week computation. With it,
 ### Setup
 
 1. Generate a **fine-grained PAT** at https://github.com/settings/personal-access-tokens/new
-   - **Repository access:** only `tzone85/ee-java-quest`
+   - **Repository access:** only `tzone85/senior-java-quest`
    - **Permissions:** `Contents` → `Read and write`
    - **Expiration:** whatever you can live with (90 days is reasonable)
 2. Open the app → **Settings** → **GitHub progress sync**
